@@ -1,0 +1,17 @@
+{
+    "type": "module",
+    "name": "NostrBridge",
+    "version": "1.0.0",
+    "main": "server.js",
+    "scripts": {
+        "start": "node src/server.js"
+    },
+    "dependencies": {
+        "axios": "^1.7.7",
+        "import-meta-resolve": "^4.1.0",
+        "node-localstorage": "^3.0.5",
+        "nostr-tools": "^2.7.2",
+        "uuid": "^11.0.3",
+        "ws": "^8.18.0"
+    }
+}
