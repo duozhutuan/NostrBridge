@@ -21,7 +21,7 @@ export function handleRelay(ws) {
 
                 if (targetClient) {
                     // 转发消息给目标客户端
-                    targetClient.send(JSON.stringify({ action: 'message', from: data.from, message: data.message }));
+                    targetClient.send(JSON.stringify({ action: 'message', from: data.from, code:data.code, message: data.message }));
                     console.log(`Message forwarded from ${data.from} to ${data.to}`);
                 } else {
                     // 如果目标客户端不在线，返回错误
@@ -32,7 +32,7 @@ export function handleRelay(ws) {
             }
         } catch (error) {
             console.error('Error processing message:', error);
-            ws.send(JSON.stringify({ status: 'error', message: 'Invalid message format' }));
+            ws.send(JSON.stringify({ status: 'error',code:502, message: 'Invalid message format' }));
         }
     });
 
