@@ -25,10 +25,10 @@ export function handleRelay(ws) {
                     console.log(`Message forwarded from ${data.from} to ${data.to}`);
                 } else {
                     // 如果目标客户端不在线，返回错误
-                    ws.send(JSON.stringify({ action: 'message', status: 'error', message: `Client ${data.to} not found` }));
+                    ws.send(JSON.stringify({ action: 'message', status: 'error', code:404,message: `Client ${data.to} not found` }));
                 }
             } else {
-                ws.send(JSON.stringify({ status: 'error', message: 'Invalid action or missing parameters' }));
+                ws.send(JSON.stringify({ status: 'error', code:502,message: 'Invalid action or missing parameters' }));
             }
         } catch (error) {
             console.error('Error processing message:', error);
