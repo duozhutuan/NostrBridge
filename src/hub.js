@@ -1,6 +1,7 @@
 
 // Forward WebSocket connections to another relay server
-
+import { parse } from 'url';
+import  WebSocket  from 'ws';
 export function handleHub(ws,req){
 
     const parsedUrl = parse(req.url, true);
