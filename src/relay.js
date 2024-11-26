@@ -2,7 +2,7 @@
 import { registerClient, removeClient, getClient ,clients} from './clients.js';
 import { v4 as uuidv4 } from 'uuid'; 
 // 处理 WebSocket 连接和消息
-export function handleConnection(ws) {
+export function handleRelay(ws) {
     console.log('New client connected');
     const clientId = uuidv4(); 
 
