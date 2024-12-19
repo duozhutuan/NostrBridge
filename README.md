@@ -31,3 +31,24 @@ const messageData = {
     message: message // Message content
 };
 
+## add connect relay by pubkey
+map relay {pubkey:relayserver}
+- ** relay server register pubkey to bridge**
+- client connect relay server by bridge + pubkey
+```
+url = "wss://bridge.xxx.com/1ba6b866701217bf985dc6c7206b87dc473be936cef856cba753a25e6ba1c3a4"
+new WebSocket(url)
+```
+
+## How to register my relay to the bridge.
+
+```
+node src/cli.js
+```
+
+cli.js by config.js register your relay server to bridge
+
+## Can my relay server be on a local network or the internet? Can a local network also work?
+Yes. support IP is 192.168.1.xxx .
+
+

@@ -1,10 +1,106 @@
 
 // Forward WebSocket connections to another relay server
+import { join } from 'path';
 import { parse } from 'url';
 import  WebSocket  from 'ws';
-export function handleHub(ws,req){
 
-    const parsedUrl = parse(req.url, true);
+let pubkeyServers = {};  // 用于存储 clientId 和对应的 WebSocket 连接
+
+// 添加或移除客户端
+function registerServer(pubkey, ws) {
+    pubkeyServers[pubkey] = ws;
+}
+
+function removeServer(pubkey) {
+    delete pubkeyServers[pubkey];
+}
+
+function getServer(pubkey) {
+    return pubkeyServers[pubkey];
+}
+
+let UidtoServers = {};  // 用于存储 clientId 和对应的 WebSocket 连接
+
+// 添加或移除客户端
+function registerUidServer(Uid, ws) {
+    UidtoServers[Uid] = ws;
+}
+
+function removeUidServer(Uid) {
+    delete UidtoServers[Uid];
+}
+
+function getUidServer(Uid) {
+    return UidtoServers[Uid];
+}
+
+
+export function registerRelayServer(ws,pubkey){
+    registerServer(ws,pubkey)
+    ws.on()
+}
+
+
+export function  connectRelayServer(ws,pubkey){
+
+    let targetrelay = getServer(pubkey);
+    const clientId = uuidv4(); 
+    registerUidServer(clientId,ws)
+    targetrelay.send(JSON.stringify({type:"newconnect",clientuid:clientId}))
+
+}
+export function establishClientRelayConnection(ws,Uid){
+    let targetWs = getUidServer(Uid)    
+
+    ws.on('message', (message) => {
+        if (Buffer.isBuffer(message)) {
+             message = message.toString('utf-8');
+        }
+
+          console.log(message)
+
+
+          const sendWhenReady = () => {
+              if (targetWs.readyState === WebSocket.OPEN) {
+                  targetWs.send(message);
+              } else {
+                      //wait 500ms
+                  setTimeout(sendWhenReady, 500);
+              }
+          };
+
+          sendWhenReady();
+    });
+
+    targetWs.on('message', (message) => {
+            if (Buffer.isBuffer(message)) {
+                message = message.toString('utf-8');
+            }
+
+            if (ws.readyState === WebSocket.OPEN) {
+                console.log(message);
+                ws.send(message);
+            }
+    });
+        
+    ws.on('close', () => {
+            try {
+                targetWs.close();
+            } catch {
+            }
+    });
+
+    targetWs.on('close', () => {
+            try {
+                ws.close();
+            } catch {
+            }
+    });
+
+}
+export function handleHub(ws,url){
+
+    const parsedUrl = parse(url, true);
     var targetUrl = parsedUrl.pathname.slice(1); 
 
     if (targetUrl.startsWith('wss:/') && !targetUrl.startsWith('wss://')) {
