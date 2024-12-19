@@ -3,6 +3,7 @@
 import { join } from 'path';
 import { parse } from 'url';
 import  WebSocket  from 'ws';
+import { v4 as uuidv4 } from 'uuid';
 
 let pubkeyServers = {};  // 用于存储 clientId 和对应的 WebSocket 连接
 
@@ -36,22 +37,39 @@ function getUidServer(Uid) {
 
 
 export function registerRelayServer(ws,pubkey){
-    registerServer(ws,pubkey)
-    ws.on()
+    registerServer(pubkey,ws)
+    ws.on("message",(message)=>{
+    })
+    ws.on("error",(message)=>{
+        console.log(message)
+    })
 }
 
 
 export function  connectRelayServer(ws,pubkey){
 
     let targetrelay = getServer(pubkey);
+    if (!targetrelay){
+        ws.close();
+        return ;
+    }
     const clientId = uuidv4(); 
     registerUidServer(clientId,ws)
     targetrelay.send(JSON.stringify({type:"newconnect",clientuid:clientId}))
+    ws.Queue = []
+    ws.on('message', (message) => {
+        if (ws.Queue){
+            ws.Queue.push(message)
+        }
+    });
 
+    
 }
 export function establishClientRelayConnection(ws,Uid){
     let targetWs = getUidServer(Uid)    
-
+    let oldmessage = targetWs.Queue.slice()
+    targetWs.Queue = ""
+    
     ws.on('message', (message) => {
         if (Buffer.isBuffer(message)) {
              message = message.toString('utf-8');
@@ -96,6 +114,18 @@ export function establishClientRelayConnection(ws,Uid){
             } catch {
             }
     });
+
+    oldmessage.map( message => {
+
+            if (Buffer.isBuffer(message)) {
+                message = message.toString('utf-8');
+            }
+
+            if (ws.readyState === WebSocket.OPEN) {
+                console.log(message);
+                ws.send(message);
+            }
+    })
 
 }
 export function handleHub(ws,url){
@@ -166,7 +196,5 @@ export function handleHub(ws,url){
     });
 
 
-     
-
-
+    
 }

@@ -19,12 +19,12 @@ wss.on('connection', (ws,req) => {
         return;
     }
 
-    const [path, param] = targetUrl.split('/');
+    const [path, identifier] = targetUrl.split('/');
     switch (path) {
         case 'registerrelay':
             registerRelayServer(ws, identifier);
             break;
-        case 'connectrelay':
+        case 'pubkey':
             connectRelayServer(ws, identifier);
             break;
         case 'establishconnection':

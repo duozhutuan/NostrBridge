@@ -23,21 +23,22 @@ if (config.pubkey){
     Keypub = config.pubkey
 }
 
-remoteBridges = [
-'wss://bridge.duozhutuan.com',
-
+let remoteBridges = [
+'ws://localhost:8088',
 ]
 
 remoteBridges.forEach((url, index) => {
-    const ws = new WebSocket(url+"registerrelay/"+KeyPub);
-
+    const ws = new WebSocket(url+"/registerrelay/"+Keypub);
+    ws.on("error",(message)=>{console.log("err",message)})
+    ws.on("close",(message)=>{console.log("close",message)})
     ws.on('message', (message) => {
         if (Buffer.isBuffer(message)) {
              message = message.toString('utf-8');
         }
+        console.log(message)
         let data = JSON.parse(message)
         if (data.type == "newconnect"){
-            const targetWs = new WebSocket(url+"establishconnection/"+data.clientuid);
+            const targetWs = new WebSocket(url+"/establishconnection/"+data.clientuid);
             const localws  = new WebSocket(config.localserver)    
             localws.on('message', (message) => {
                 if (Buffer.isBuffer(message)) {
@@ -63,11 +64,18 @@ remoteBridges.forEach((url, index) => {
                 if (Buffer.isBuffer(message)) {
                      message = message.toString('utf-8');
                 }
+
+                console.log(message)
+                const sendWhenReady = () => {
+                      if (localws.readyState === WebSocket.OPEN) {
+                          localws.send(message);
+                      } else {
+                              //wait 500ms
+                          setTimeout(sendWhenReady, 500);
+                      }
+                  };
       
-                if (ws.readyState === WebSocket.OPEN) {
-                      console.log(message);
-                      localws.send(message);
-                }
+                  sendWhenReady();
           });
             
           localws.on('close', () => {
