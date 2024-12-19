@@ -4,6 +4,9 @@ import { join } from 'path';
 import { parse } from 'url';
 import  WebSocket  from 'ws';
 import { v4 as uuidv4 } from 'uuid';
+import { schnorr } from "@noble/curves/secp256k1";
+import { bytesToHex ,hexToBytes }  from "@noble/hashes/utils";
+
 
 let pubkeyServers = {};  // 用于存储 clientId 和对应的 WebSocket 连接
 
@@ -37,8 +40,25 @@ function getUidServer(Uid) {
 
 
 export function registerRelayServer(ws,pubkey){
-    registerServer(pubkey,ws)
+    const clientId = uuidv4(); 
+    const sid = new TextEncoder().encode(clientId);
+    ws.send(JSON.stringify({"type":'sig',"clientId":clientId}))
     ws.on("message",(message)=>{
+        if (Buffer.isBuffer(message)) {
+             message = message.toString('utf-8');
+        }
+        let data = JSON.parse(message)
+        if (data.type == "sig"){
+            let verify = schnorr.verify(hexToBytes(data.sig), sid, pubkey);
+            console.log("Verify true,register RelayServer",pubkey)
+            if (verify){
+                registerServer(pubkey,ws)
+                ws.send(JSON.stringify({"type":'register',"message":"register ok!"}))
+            } else {
+                ws.send(JSON.stringify({"type":'error',"message":"verify false!"}))
+            }
+        }
+                
     })
     ws.on("error",(message)=>{
         console.log(message)

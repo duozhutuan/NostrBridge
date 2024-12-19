@@ -4,6 +4,8 @@ import * as nip19 from 'nostr-tools/nip19'
 import { config } from './config.js';
 import { handleHub } from './hub.js'
 import { WebSocket } from 'ws';  // 正确的导入方式
+import { schnorr } from "@noble/curves/secp256k1";
+import { bytesToHex } from "@noble/hashes/utils";
 
 const localStorage = new LocalStorage('.data');
 
@@ -19,25 +21,34 @@ if (Keypriv === null){
     Keypub = getPublicKey(Keypriv) // `pk` is a hex string
 }
 
-if (config.pubkey){
-    Keypub = config.pubkey
+//keypriv data fromat:29,99,105,203,87,101,237
+if (config.Keypriv){
+    Keypriv = config.Keypriv
+    const numArray = Keypriv.split(',').map(Number);
+    Keypriv = new Uint8Array(numArray)
+    Keypub = getPublicKey(Keypriv) // `pk` is a hex string
 }
 
 let remoteBridges = [
+//'wss://bridge.duozhutuan.com',
 'ws://localhost:8088',
 ]
-
+console.log("pubkey:",Keypub)
 remoteBridges.forEach((url, index) => {
     const ws = new WebSocket(url+"/registerrelay/"+Keypub);
-    ws.on("error",(message)=>{console.log("err",message)})
-    ws.on("close",(message)=>{console.log("close",message)})
     ws.on('message', (message) => {
         if (Buffer.isBuffer(message)) {
              message = message.toString('utf-8');
         }
-        console.log(message)
         let data = JSON.parse(message)
-        if (data.type == "newconnect"){
+        if (data.type == "sig"){
+            let sig = schnorr.sign(new TextEncoder().encode(data.clientId),Keypriv)
+            ws.send(JSON.stringify({"type":'sig',"sig":bytesToHex(sig)}))
+
+        } else if (data.type == "register"){
+            console.log(data.message)
+
+        } else if (data.type == "newconnect"){
             const targetWs = new WebSocket(url+"/establishconnection/"+data.clientuid);
             const localws  = new WebSocket(config.localserver)    
             localws.on('message', (message) => {
