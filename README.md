@@ -51,4 +51,28 @@ cli.js by config.js register your relay server to bridge
 ## Can my relay server be on a local network or the internet? Can a local network also work?
 Yes. support IP is 192.168.1.xxx .
 
+<img src="https://raw.githubusercontent.com/duozhutuan/nostrbridge/master/docs/bridge.drawio.png" alt="drawing" />
+### Prerequisites
+
+- **Bridge Server**: Domain name `bridge.xxx.com`
+- **Relay Server**:
+  - Public Domain: `relay.xxx.com`
+  - Private Network 
+- **Client**
+
+### Usage Rules
+
+1. **Accessing Relay Server through Bridge**
+   - Users can access the Relay server through the Bridge server using the format: `wss://bridge.xxx.com/wss://relay.xxx.com`
+   
+2. **Accessing Relay Server via Bridge using PubKey**
+   - Users can access the Relay server through the Bridge server using the format: `wss://bridge.xxx.com/pubkey/[PubKey]`
+   - This requires the Relay server to be registered with the Bridge server
+
+3. **Accessing Private Network Relay Server through Bridge using PubKey**
+   - Users can access the Private Network Relay server through the Bridge server and PubKey using the format: `wss://bridge.xxx.com/pubkey/[PubKey]`
+   - This requires the Private Network Relay server to be registered with the Bridge server
+
+4. **Directly Accessing Public Relay Server**
+   - Users can directly access the Public Relay server but cannot directly access the Private Network Relay server
 
