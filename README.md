@@ -30,11 +30,13 @@ const messageData = {
     to: to,          // Receiver client
     message: message // Message content
 };
+```
 
 ## add connect relay by pubkey
 map relay {pubkey:relayserver}
 - ** relay server register pubkey to bridge**
 - client connect relay server by bridge + pubkey
+
 ```
 url = "wss://bridge.xxx.com/1ba6b866701217bf985dc6c7206b87dc473be936cef856cba753a25e6ba1c3a4"
 new WebSocket(url)
@@ -51,7 +53,9 @@ cli.js by config.js register your relay server to bridge
 ## Can my relay server be on a local network or the internet? Can a local network also work?
 Yes. support IP is 192.168.1.xxx .
 
+**Process Flow:**
 <img src="https://raw.githubusercontent.com/duozhutuan/nostrbridge/master/docs/bridge.drawio.png" alt="drawing" />
+
 ### Prerequisites
 
 - **Bridge Server**: Domain name `bridge.xxx.com`
