@@ -38,7 +38,7 @@ map relay {pubkey:relayserver}
 - client connect relay server by bridge + pubkey
 
 ```
-url = "wss://bridge.xxx.com/1ba6b866701217bf985dc6c7206b87dc473be936cef856cba753a25e6ba1c3a4"
+url = "wss://bridge.xxx.com/pubkey/1ba6b866701217bf985dc6c7206b87dc473be936cef856cba753a25e6ba1c3a4"
 new WebSocket(url)
 ```
 
