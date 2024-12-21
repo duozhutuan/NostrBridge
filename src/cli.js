@@ -30,12 +30,15 @@ if (config.Keypriv){
 }
 
 let remoteBridges = [
-//'wss://bridge.duozhutuan.com',
-'ws://localhost:8088',
+  'wss://bridge.duozhutuan.com',
+//'ws://localhost:8088',
 ]
+
 console.log("pubkey:",Keypub)
-remoteBridges.forEach((url, index) => {
+
+function createConnect(url){
     const ws = new WebSocket(url+"/registerrelay/"+Keypub);
+
     ws.on('message', (message) => {
         if (Buffer.isBuffer(message)) {
              message = message.toString('utf-8');
@@ -106,4 +109,12 @@ remoteBridges.forEach((url, index) => {
             
     })
 
+    ws.on("close",(message)=>{
+
+        setTimeout(() => createConnect(url), 200);
+    })
+}
+
+remoteBridges.forEach((url, index) => {
+    createConnect(url)
 });
