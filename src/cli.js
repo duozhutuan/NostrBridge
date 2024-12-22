@@ -1,3 +1,4 @@
+
 import { LocalStorage } from 'node-localstorage';
 import { generateSecretKey, getPublicKey } from 'nostr-tools/pure'
 import * as nip19 from 'nostr-tools/nip19'
@@ -106,13 +107,31 @@ function createConnect(url){
                   }
           });
         }
+
+
             
     })
 
-    ws.on("close",(message)=>{
-
-        setTimeout(() => createConnect(url), 200);
+    ws.on("open",(message)=>{
+  
+        let intervalId = setInterval(() => {
+            ws.ping()          
+            if (ws.readyState === WebSocket.CLOSED) {
+                    console.log("WebSocket connection lost. Reconnecting...");
+                    clearInterval(intervalId);  // 撤销定时器
+                    createConnect(url)
+                }
+            }, 10000); 
     })
+    ws.on("close",(message)=>{
+        console.log("close reconnect to  ",url)
+        
+    })
+    ws.on("error",(message) =>{
+        console.log("error")
+    })
+
+
 }
 
 remoteBridges.forEach((url, index) => {
