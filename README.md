@@ -80,3 +80,48 @@ Yes. support IP is 192.168.1.xxx .
 4. **Directly Accessing Public Relay Server**
    - Users can directly access the Public Relay server but cannot directly access the Private Network Relay server
 
+## Deploy nostrbridge to your server as a bridge.
+
+### start server
+```
+forever start src/server.js
+```
+
+### ngnix config
+```
+vim /etc/nginx/sites-enabled/xxx.conf 
+
+add :
+
+map $http_upgrade $connection_upgrade {
+        default upgrade;
+        ''      close;
+}
+
+upstream websocketio {
+        server 127.0.0.1:8xx9;
+}
+
+server {
+    listen 80;
+    server_name bridge.xxxx.com ;
+
+    location / {
+        proxy_pass http://websocketio;
+	    proxy_http_version 1.1;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $host;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_connect_timeout 60s;
+            proxy_read_timeout 600s;
+    }
+}
+
+```
+
+access :
+
+wss://bridge.xxxx.com/wss://relay.target.com
+
