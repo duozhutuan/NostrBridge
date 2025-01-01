@@ -87,7 +87,7 @@ Yes. support IP is 192.168.1.xxx .
 forever start src/server.js
 ```
 
-### ngnix config
+### nginx config
 ```
 vim /etc/nginx/sites-enabled/xxx.conf 
 
