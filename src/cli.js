@@ -3,7 +3,7 @@ import { LocalStorage } from 'node-localstorage';
 import { generateSecretKey, getPublicKey } from 'nostr-tools/pure'
 import * as nip19 from 'nostr-tools/nip19'
 import { config } from './config.js';
-import { handleHub } from './hub.js'
+import { handleHub } from './relay-forwarder.js'
 import { WebSocket } from 'ws';  // 正确的导入方式
 import { schnorr } from "@noble/curves/secp256k1";
 import { bytesToHex } from "@noble/hashes/utils";

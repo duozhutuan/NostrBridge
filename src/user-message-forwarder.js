@@ -1,4 +1,4 @@
-// relay.js
+// user-message-forwarder.js
 import { v4 as uuidv4 } from 'uuid'; 
 
 export let clients = {};  // 用于存储 clientId 和对应的 WebSocket 连接
@@ -19,7 +19,7 @@ export function getClient(clientId) {
 
 
 // 处理 WebSocket 连接和消息
-export function handleRelay(ws) {
+export function handleUserMessage(ws) {
     console.log('New client connected');
     const clientId = uuidv4(); 
 
