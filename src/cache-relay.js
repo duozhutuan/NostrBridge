@@ -48,14 +48,13 @@ export class cacheRelay {
     this.connect_timestamp  = Math.floor(Date.now() / 1000);
     ws.on("message",(message) => this.handle(message))
     // close after 5 minutes
-    setTimeout(this.cleanup, 5000 * 60);
+    setTimeout(() => this.cleanup(), 5000 * 60);
   }
 
   
   cleanup() {
     this._ws.close(); // 修改为 this._ws
-    this._ws = null;
- 
+    this._ws = null; 
   }
  
 
