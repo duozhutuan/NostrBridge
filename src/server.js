@@ -13,6 +13,8 @@ const wss = new WebSocketServer({ port: port });
 wss.on('connection', (ws,req) => {
     const parsedUrl = parse(req.url, true);
     var targetUrl = parsedUrl.pathname.slice(1);  
+    const clientIP = req.socket.remoteAddress;
+    console.log('Client connected from:', clientIP);
     console.log(req.url)
 
     if (targetUrl.startsWith('wss:/') || targetUrl.startsWith('ws:/')) {
@@ -35,8 +37,9 @@ wss.on('connection', (ws,req) => {
              new cacheRelay(ws);   
              break; 
         case 'client': //client to client
-        default:
             handleUserMessage(ws);
+            break;
+        default:
             break;
     }
 
