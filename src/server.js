@@ -13,8 +13,7 @@ const wss = new WebSocketServer({ port: port });
 wss.on('connection', (ws,req) => {
     const parsedUrl = parse(req.url, true);
     var targetUrl = parsedUrl.pathname.slice(1);  
-    const clientIP = req.socket.remoteAddress;
-    console.log('Client connected from:', clientIP);
+    console.log('Client connected from:', req.headers['x-forwarded-for'],req.headers['x-real-ip']);
     console.log(req.url)
 
     if (targetUrl.startsWith('wss:/') || targetUrl.startsWith('ws:/')) {
