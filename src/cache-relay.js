@@ -1,6 +1,6 @@
 
 // a simple relay server for cache message
-
+import {log} from "./log.js"
 let SubMaps = new Map();
 let EventMaps = new Map();
  
@@ -68,7 +68,7 @@ export class cacheRelay {
         message = message.toString('utf-8');
     }
 
-    console.log(message)
+    log.red(message)
     try {
       message = JSON.parse(message);
     } catch (e) {
